@@ -16,8 +16,14 @@ export async function GET() {
 
     if (error) throw error
 
-    const delivery = data?.filter(order => order.collection_method === 'delivery' && order.order_status === 'NOT_DROPPED_OFF') || []
-    const collection = data?.filter(order => order.collection_method === 'collection' && order.order_status === 'NOT_COLLECTED') || []
+    const delivery = data?.filter(order => 
+      order.collection_method === 'DELIVERY' && 
+      order.order_status === 'NOT_DROPPED_OFF'
+    ) || []
+    const collection = data?.filter(order => 
+      order.collection_method === 'COLLECTION' && 
+      order.order_status === 'NOT_COLLECTED'
+    ) || []
 
     return NextResponse.json({ delivery, collection })
   } catch (error) {
