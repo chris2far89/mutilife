@@ -16,6 +16,7 @@ export default function AllOrdersTab() {
   const [customTo, setCustomTo] = useState('')
   const [total, setTotal] = useState(0)
   const [offset, setOffset] = useState(0)
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const limit = 50
 
   const getDateRange = () => {
@@ -221,15 +222,6 @@ export default function AllOrdersTab() {
                     <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Customer
                     </th>
-                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Phone
-                    </th>
-                    <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Address
-                    </th>
-                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Bottles
-                    </th>
                     <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Method
                     </th>
@@ -237,7 +229,13 @@ export default function AllOrdersTab() {
                       Status
                     </th>
                     <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Fulfillment
+                    </th>
+                    <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Created
+                    </th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
                     </th>
                   </tr>
                 </thead>
@@ -250,15 +248,6 @@ export default function AllOrdersTab() {
                       <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
                         {order.customer_name}
                       </td>
-                      <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {order.customer_phone}
-                      </td>
-                      <td className="hidden md:table-cell px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                        {order.entered_address}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
-                        {order.bottles}
-                      </td>
                       <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
                         {order.collection_method}
                       </td>
@@ -268,7 +257,18 @@ export default function AllOrdersTab() {
                         </span>
                       </td>
                       <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {order.fulfillment_status || 'N/A'}
+                      </td>
+                      <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {format(new Date(order.created_at), 'MMM d, yyyy HH:mm')}
+                      </td>
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                        <button
+                          onClick={() => setSelectedOrder(order)}
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          View
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -289,6 +289,85 @@ export default function AllOrdersTab() {
             </div>
           )}
         </>
+      )}
+
+      {selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedOrder(null)}>
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Order #{selectedOrder.order_number}</h2>
+                  <p className="text-sm text-gray-500">{format(new Date(selectedOrder.created_at), 'MMM d, yyyy HH:mm')}</p>
+                </div>
+                <button onClick={() => setSelectedOrder(null)} className="text-gray-400 hover:text-gray-600">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <span className="px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800">
+                    {selectedOrder.order_status}
+                  </span>
+                  {selectedOrder.fulfillment_status && (
+                    <span className="px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
+                      {selectedOrder.fulfillment_status}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Customer Information</h3>
+                  <p className="text-sm text-gray-900">{selectedOrder.customer_name}</p>
+                  <p className="text-sm text-gray-600">{selectedOrder.customer_phone}</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Address</h3>
+                  <p className="text-sm text-gray-600">{selectedOrder.entered_address}</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Items</h3>
+                  {selectedOrder.line_items && Array.isArray(selectedOrder.line_items) ? (
+                    <ul className="text-sm text-gray-600 list-disc list-inside">
+                      {selectedOrder.line_items.map((item: any, idx: number) => (
+                        <li key={idx}>{item.name} x {item.quantity}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-gray-600">No items</p>
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Delivery Method</h3>
+                  <p className="text-sm text-gray-600 capitalize">{selectedOrder.collection_method}</p>
+                </div>
+
+                {selectedOrder.collection_method === 'DELIVERY' && (
+                  <>
+                    {selectedOrder.waybill_no && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-700 mb-2">Waybill</h3>
+                        <p className="text-sm text-gray-600">{selectedOrder.waybill_no}</p>
+                      </div>
+                    )}
+                    {selectedOrder.pin && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-700 mb-2">PIN</h3>
+                        <p className="text-sm text-gray-600">{selectedOrder.pin}</p>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

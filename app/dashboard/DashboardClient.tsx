@@ -23,14 +23,19 @@ export default function DashboardClient() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4 flex justify-between items-center">
-          <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Orders Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition"
-          >
-            Logout
-          </button>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div className="flex items-center gap-3">
+              <img src="/images/logo.avif" alt="Logo" className="h-8 sm:h-10 w-auto" />
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Orders Dashboard</h1>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="self-start sm:self-auto px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </header>
 
