@@ -249,7 +249,7 @@ export default function AllOrdersTab() {
                         {order.customer_name}
                       </td>
                       <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
-                        {order.collection_method}
+                        {order.delivery_type || 'Unavailable'}
                       </td>
                       <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
@@ -328,6 +328,9 @@ export default function AllOrdersTab() {
                 <div>
                   <h3 className="text-sm font-semibold text-gray-700 mb-2">Address</h3>
                   <p className="text-sm text-gray-600">{selectedOrder.entered_address}</p>
+                  {selectedOrder.delivery_type === 'Pudo Locker to Locker' && selectedOrder.locker_name && (
+                    <p className="text-sm text-gray-600 mt-1">Locker: {selectedOrder.locker_name}</p>
+                  )}
                 </div>
 
                 <div>
@@ -345,7 +348,7 @@ export default function AllOrdersTab() {
 
                 <div>
                   <h3 className="text-sm font-semibold text-gray-700 mb-2">Delivery Method</h3>
-                  <p className="text-sm text-gray-600 capitalize">{selectedOrder.collection_method}</p>
+                  <p className="text-sm text-gray-600 capitalize">{selectedOrder.delivery_type || 'Unavailable'}</p>
                 </div>
 
                 {selectedOrder.collection_method === 'DELIVERY' && (

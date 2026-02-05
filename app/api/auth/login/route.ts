@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const { password } = await request.json()
 
     if (password === process.env.DASHBOARD_PASSWORD) {
-      setAuthCookie()
+      await setAuthCookie()
       return NextResponse.json({ success: true })
     }
 

@@ -26,6 +26,8 @@ export type Order = {
   bottles: number
   line_items?: Array<{ name: string; quantity: number }>
   collection_method: 'delivery' | 'collection' | 'DELIVERY' | 'COLLECTION'
+  delivery_type: string | null
+  locker_name: string | null
   waybill_no: string | null
   pin: string | null
   created_at: string

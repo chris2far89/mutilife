@@ -3,7 +3,7 @@ import { isAuthenticated } from '@/lib/auth'
 import { supabaseServer } from '@/lib/supabaseServer'
 
 export async function GET() {
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

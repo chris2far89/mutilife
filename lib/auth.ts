@@ -1,9 +1,17 @@
 import { cookies } from 'next/headers'
+import { SignJWT, jwtVerify } from 'jose'
 
 const AUTH_COOKIE_NAME = 'dashboard_auth'
+const secret = new TextEncoder().encode(process.env.COOKIE_SECRET || 'fallback-secret-change-in-production')
 
-export function setAuthCookie() {
-  cookies().set(AUTH_COOKIE_NAME, 'authenticated', {
+export async function setAuthCookie() {
+  const token = await new SignJWT({ authenticated: true })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('7d')
+    .sign(secret)
+
+  cookies().set(AUTH_COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
@@ -16,7 +24,14 @@ export function clearAuthCookie() {
   cookies().delete(AUTH_COOKIE_NAME)
 }
 
-export function isAuthenticated(): boolean {
-  const authCookie = cookies().get(AUTH_COOKIE_NAME)
-  return authCookie?.value === 'authenticated'
+export async function isAuthenticated(): Promise<boolean> {
+  try {
+    const authCookie = cookies().get(AUTH_COOKIE_NAME)
+    if (!authCookie?.value) return false
+
+    const { payload } = await jwtVerify(authCookie.value, secret)
+    return payload.authenticated === true
+  } catch {
+    return false
+  }
 }
